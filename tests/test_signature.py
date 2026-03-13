@@ -1,4 +1,4 @@
-"""tests/test_signature.py - Unit tests for webhook HMAC signature validation."""
+"""Unit tests for webhook HMAC signature validation."""
 
 import hashlib
 import hmac
@@ -10,7 +10,9 @@ def test_valid_signature() -> None:
     """Accept a valid GitHub-style signature header."""
     secret = "super-secret"
     payload = b'{"ref":"refs/heads/main"}'
-    digest = hmac.new(secret.encode("utf-8"), payload, hashlib.sha256).hexdigest()
+    digest = hmac.new(
+        secret.encode("utf-8"), payload, hashlib.sha256
+    ).hexdigest()
 
     assert verify_signature(secret, payload, f"sha256={digest}")
 

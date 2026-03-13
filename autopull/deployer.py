@@ -13,7 +13,7 @@ DEFAULT_LOG_DIR = "/var/log/autopull"
 
 
 def _resolve_script_path() -> str:
-    """Resolve deploy script path from env, system install, or local repository."""
+    """Resolve deploy script path from env, system install, or local repo."""
     env_script = os.environ.get("AUTOPULL_DEPLOY_SCRIPT")
     if env_script:
         return env_script
@@ -23,7 +23,12 @@ def _resolve_script_path() -> str:
         return system_path
 
     local_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "scripts", "pull-and-deploy.sh")
+        os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "scripts",
+            "pull-and-deploy.sh",
+        )
     )
     return local_path
 
@@ -46,8 +51,10 @@ def _project_log_path(project_name: str) -> str:
     return os.path.join(_ensure_log_dir(), f"{safe_name}.log")
 
 
-def deploy_project(project_name: str, project_config: Dict[str, str]) -> Tuple[bool, int]:
-    """Run pull-and-deploy script and capture output in project log file."""
+def deploy_project(
+    project_name: str, project_config: Dict[str, str]
+) -> Tuple[bool, int]:
+    """Run deploy script and capture output in a project log file."""
     logger = project_logger_adapter(get_logger(), project_name)
     script_path = _resolve_script_path()
 
@@ -80,7 +87,9 @@ def deploy_project(project_name: str, project_config: Dict[str, str]) -> Tuple[b
         exit_code = 1
 
     with open(log_path, "a", encoding="utf-8") as handle:
-        handle.write(f"\n[{timestamp}] Running deployment for {project_name}\n")
+        handle.write(
+            f"\n[{timestamp}] Running deployment for {project_name}\n"
+        )
         handle.write(output or "")
         handle.write(f"[{timestamp}] Exit code: {exit_code}\n")
 
@@ -92,8 +101,10 @@ def deploy_project(project_name: str, project_config: Dict[str, str]) -> Tuple[b
     return False, exit_code
 
 
-def start_background_deploy(project_name: str, project_config: Dict[str, str]) -> None:
-    """Start deployment in a daemon thread so HTTP responses return immediately."""
+def start_background_deploy(
+    project_name: str, project_config: Dict[str, str]
+) -> None:
+    """Start deployment in a daemon thread for immediate HTTP responses."""
 
     def _runner() -> None:
         deploy_project(project_name, project_config)

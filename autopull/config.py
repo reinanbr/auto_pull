@@ -34,10 +34,13 @@ def _require_string(data: Dict[str, Any], key: str, project_name: str) -> str:
     """Read a required string key from project data."""
     value = data.get(key)
     if value is None:
-        raise ConfigError(f"Project '{project_name}' is missing required field '{key}'.")
+        raise ConfigError(
+            f"Project '{project_name}' is missing required field '{key}'."
+        )
     if not isinstance(value, str) or not value.strip():
         raise ConfigError(
-            f"Project '{project_name}' field '{key}' must be a non-empty string."
+            f"Project '{project_name}' field '{key}' must be "
+            "a non-empty string."
         )
     return value.strip()
 
@@ -49,18 +52,23 @@ def _optional_string(
     value = data.get(key, default)
     if not isinstance(value, str) or not value.strip():
         raise ConfigError(
-            f"Project '{project_name}' field '{key}' must be a non-empty string."
+            f"Project '{project_name}' field '{key}' must be "
+            "a non-empty string."
         )
     return value.strip()
 
 
-def _validate_project(name: str, project_data: Dict[str, Any]) -> Dict[str, str]:
+def _validate_project(
+    name: str, project_data: Dict[str, Any]
+) -> Dict[str, str]:
     """Validate and normalize a single project configuration."""
     if not isinstance(project_data, dict):
         raise ConfigError(f"Project '{name}' must be a JSON object.")
 
     path = _require_string(project_data, "path", name)
-    secret = _resolve_secret(_require_string(project_data, "secret", name), name)
+    secret = _resolve_secret(
+        _require_string(project_data, "secret", name), name
+    )
     branch = _optional_string(project_data, "branch", "main", name)
     compose_file = _optional_string(
         project_data, "compose_file", "docker-compose.yml", name
@@ -76,7 +84,9 @@ def _validate_project(name: str, project_data: Dict[str, Any]) -> Dict[str, str]
 
 def load_config(config_path: str | None = None) -> Dict[str, Dict[str, str]]:
     """Load and validate AutoPull project configuration from disk."""
-    path = config_path or os.environ.get("AUTOPULL_CONFIG", DEFAULT_CONFIG_PATH)
+    path = config_path or os.environ.get(
+        "AUTOPULL_CONFIG", DEFAULT_CONFIG_PATH
+    )
 
     if not os.path.exists(path):
         raise ConfigError(
@@ -88,12 +98,16 @@ def load_config(config_path: str | None = None) -> Dict[str, Dict[str, str]]:
         with open(path, "r", encoding="utf-8") as handle:
             raw_data = json.load(handle)
     except json.JSONDecodeError as exc:
-        raise ConfigError(f"Configuration file '{path}' contains invalid JSON: {exc}")
+        raise ConfigError(
+            f"Configuration file '{path}' contains invalid JSON: {exc}"
+        )
     except OSError as exc:
         raise ConfigError(f"Unable to read configuration file '{path}': {exc}")
 
     if not isinstance(raw_data, dict):
-        raise ConfigError("Configuration root must be a JSON object keyed by project name.")
+        raise ConfigError(
+            "Configuration root must be a JSON object keyed by project name."
+        )
     if not raw_data:
         raise ConfigError("Configuration file does not define any projects.")
 

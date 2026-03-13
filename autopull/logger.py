@@ -21,7 +21,7 @@ class ProjectFormatter(logging.Formatter):
 
 
 def _resolve_log_dir() -> str:
-    """Resolve writable log directory with a safe fallback for local development."""
+    """Resolve writable log dir with a safe local-development fallback."""
     configured = os.environ.get("AUTOPULL_LOG_DIR", DEFAULT_LOG_DIR)
     try:
         os.makedirs(configured, exist_ok=True)
@@ -32,7 +32,9 @@ def _resolve_log_dir() -> str:
         return fallback
 
 
-def get_logger(name: str = "autopull", level: int = logging.INFO) -> logging.Logger:
+def get_logger(
+    name: str = "autopull", level: int = logging.INFO
+) -> logging.Logger:
     """Create or return a configured AutoPull logger."""
     logger = logging.getLogger(name)
     if logger.handlers:

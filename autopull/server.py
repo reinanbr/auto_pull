@@ -16,7 +16,9 @@ from autopull.logger import get_logger, project_logger_adapter
 LOGGER = get_logger()
 
 
-def verify_signature(secret: str, payload: bytes, signature_header: str) -> bool:
+def verify_signature(
+    secret: str, payload: bytes, signature_header: str
+) -> bool:
     """Validate GitHub HMAC-SHA256 signature header."""
     if not signature_header or not signature_header.startswith("sha256="):
         return False
@@ -31,7 +33,9 @@ def verify_signature(secret: str, payload: bytes, signature_header: str) -> bool
     return hmac.compare_digest(expected_signature, provided_signature)
 
 
-def _load_projects_or_500(handler: BaseHTTPRequestHandler) -> Dict[str, Dict[str, str]] | None:
+def _load_projects_or_500(
+    handler: BaseHTTPRequestHandler,
+) -> Dict[str, Dict[str, str]] | None:
     """Load projects and return None after sending HTTP 500 on failure."""
     try:
         return load_config()
@@ -100,21 +104,32 @@ class AutoPullHandler(BaseHTTPRequestHandler):
 
         content_length = self.headers.get("Content-Length")
         if content_length is None:
-            _write_json_response(self, 400, {"error": "Missing Content-Length header"})
+            _write_json_response(
+                self,
+                400,
+                {"error": "Missing Content-Length header"},
+            )
             return
 
         try:
             payload_len = int(content_length)
         except ValueError:
-            _write_json_response(self, 400, {"error": "Invalid Content-Length header"})
+            _write_json_response(
+                self,
+                400,
+                {"error": "Invalid Content-Length header"},
+            )
             return
 
         payload = self.rfile.read(payload_len)
         signature = self.headers.get("X-Hub-Signature-256", "")
-        if not verify_signature(project_config["secret"], payload, signature):
+        if not verify_signature(
+            project_config["secret"], payload, signature
+        ):
             _write_json_response(self, 401, {"error": "Invalid signature"})
             LOGGER.warning(
-                "Rejected request from %s project=%s result=401 invalid-signature",
+                "Rejected request from %s project=%s "
+                "result=401 invalid-signature",
                 client_ip,
                 project_name,
                 extra={"project": project_name},
@@ -123,7 +138,10 @@ class AutoPullHandler(BaseHTTPRequestHandler):
 
         adapter = project_logger_adapter(LOGGER, project_name)
         adapter.info("Accepted webhook from %s result=202", client_ip)
-        start_background_deploy(project_name, project_config)
+        start_background_deploy(
+            project_name,
+            project_config,
+        )
         _write_json_response(self, 202, {"status": "accepted"})
 
 
@@ -149,7 +167,10 @@ def run_server() -> None:
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        LOGGER.info("Shutdown requested by keyboard interrupt.", extra={"project": "-"})
+        LOGGER.info(
+            "Shutdown requested by keyboard interrupt.",
+            extra={"project": "-"},
+        )
     finally:
         server.server_close()
 

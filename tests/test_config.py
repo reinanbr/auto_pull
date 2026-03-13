@@ -1,4 +1,4 @@
-"""tests/test_config.py - Unit tests for AutoPull config loading and validation."""
+"""Unit tests for AutoPull config loading and validation."""
 
 import json
 
