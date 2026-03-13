@@ -1,0 +1,15 @@
+Source: autopull
+Section: utils
+Priority: optional
+Maintainer: AutoPull Contributors <opensource@example.com>
+Build-Depends: debhelper (>= 13), dh-python
+Standards-Version: 4.6.2
+Homepage: https://github.com/autopull/autopull
+Rules-Requires-Root: no
+
+Package: autopull
+Architecture: all
+Depends: ${misc:Depends}, python3, git, docker-compose-plugin
+Description: Self-hosted GitHub webhook server for automatic Docker deployments
+ AutoPull validates GitHub webhook signatures and triggers pull/redeploy
+ workflows using Docker Compose for one or multiple projects on a VPS.

@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+# debian/rules - Debian package build rules for AutoPull.
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	# Nothing to build for this Python/Bash project.
+
+
+override_dh_auto_install:
+	install -d $(CURDIR)/debian/autopull/usr/lib/autopull
+	cp -a autopull $(CURDIR)/debian/autopull/usr/lib/autopull/
+	cp -a scripts $(CURDIR)/debian/autopull/usr/lib/autopull/
+	cp -a config $(CURDIR)/debian/autopull/usr/lib/autopull/
+	cp -a systemd $(CURDIR)/debian/autopull/usr/lib/autopull/
+	cp -a nginx $(CURDIR)/debian/autopull/usr/lib/autopull/

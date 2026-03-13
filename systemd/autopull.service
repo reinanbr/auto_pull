@@ -1,0 +1,26 @@
+# systemd/autopull.service - systemd unit file for AutoPull.
+
+[Unit]
+Description=AutoPull GitHub Webhook Deployment Server
+After=network.target docker.service
+Wants=network.target docker.service
+
+[Service]
+Type=simple
+User=autopull
+Group=autopull
+WorkingDirectory=/usr/lib/autopull
+Environment=AUTOPULL_CONFIG=/etc/autopull/projects.json
+Environment=AUTOPULL_HOST=127.0.0.1
+Environment=AUTOPULL_PORT=9000
+ExecStart=/usr/bin/python3 -m autopull.server
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/log/autopull
+
+[Install]
+WantedBy=multi-user.target

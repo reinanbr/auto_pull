@@ -1,0 +1,14 @@
+{
+  "my-website": {
+    "path": "/var/www/my-website",
+    "secret": "${MY_WEBSITE_WEBHOOK_SECRET}",
+    "branch": "main",
+    "compose_file": "docker-compose.yml"
+  },
+  "my-api": {
+    "path": "/var/www/my-api",
+    "secret": "${MY_API_WEBHOOK_SECRET}",
+    "branch": "production",
+    "compose_file": "docker-compose.prod.yml"
+  }
+}
